@@ -5,15 +5,44 @@
 
 using namespace std;
 
-bool isNumber(char c) {
-    return c >= 0 && c < 10;
-}
-
-int indice(char c)  {
+int indice(char c) {
     return c-0x30;
 }
 
-bool validation(string mot, int automate) {
+int automateToInt(string automate) {
+    if (automate.compare("1") == 0) {
+        return 1;
+    }
+    if (automate.compare("2") == 0) {
+        return 2;
+    }
+    if (automate.compare("3") == 0) {
+        return 3;
+    }
+    if (automate.compare("4") == 0) {
+        return 4;
+    }
+    if (automate.compare("5") == 0) {
+        return 5;
+    }
+    if (automate.compare("6") == 0) {
+        return 6;
+    }
+    if (automate.compare("7") == 0) {
+        return 7;
+    }
+    if (automate.compare("8") == 0) {
+        return 8;
+    }
+    if (automate.compare("9") == 0) {
+        return 9;
+    }
+    if (automate.compare("10") == 0) {
+        return 10;
+    }
+}
+
+bool validation(string mot, string automate) {
     int trans1[5][4] = {{1,-1,-1,-1}, {-1,2,-1,-1}, {-1,-1,3,-1}, {-1,4,-1,-1}, {-1,-1,-1,-1}};
     int trans2[6][4] = {{1,-1,-1,-1}, {-1,2,-1,-1}, {-1,-1,3,-1}, {-1,4,-1,-1}, {5,-1,-1,-1}, {-1,-1,-1,-1}};
     int trans3[7][4] = {{1,-1,-1,-1}, {-1,2,-1,-1}, {-1,-1,3,-1}, {-1,4,-1,-1}, {-1,-1,5,-1}, {-1,6,-1,-1}, {-1,-1,-1,-1}};
@@ -35,7 +64,7 @@ bool validation(string mot, int automate) {
 
     int (*transitions)[4] = NULL;
     bool *etatfinal = NULL;
-    switch (automate) {
+    switch (automateToInt(automate)) {
         case 1:
             transitions = trans1;
             etatfinal = ef1;
@@ -91,39 +120,39 @@ bool validation(string mot, int automate) {
 }
 
 bool validationTemporelle(string mot, string temps[100]) {
-    double autom1[6][2] = {{0.01, 14}, {13.0, 15.0}, {13.0, 15.0}, {1.8, 2.0}, {0.4, 0.5}, {2.0, 12.0}};
+    double autom1[6][2] = {{0.0, 14.0}, {13.0, 15.0}, {13.0, 15.0}, {13.0, 15.0}, {0.4, 0.5}, {2.0, 12.0}};
     int transition = 0;
     bool res = true;
     double delta = 0;
     for (int i=1; i<mot.length(); i++) {
         delta = atof(temps[i].c_str()) - atof(temps[i-1].c_str());
         switch (mot[i-1]) {
-            case 0:
+            case '0':
                 switch (mot[i]) {
-                    case 1:
+                    case '1':
                         transition = 0;
                         break;
-                    case 2:
+                    case '2':
                         transition = 1;
                         break;
                 }
                 break;
-            case 1:
+            case '1':
                 switch (mot[i]) {
-                    case 0:
+                    case '0':
                         transition = 2;
                         break;
-                    case 2:
+                    case '2':
                         transition = 3;
                         break;
                 }
                 break;
-            case 2:
+            case '2':
                 switch (mot[i]) {
-                    case 0:
+                    case '0':
                         transition = 4;
                         break;
-                    case 1:
+                    case '1':
                         transition = 5;
                         break;
                 }
@@ -168,23 +197,23 @@ int main (int m, char* arg[]) {
     strcat(nouveauFichier, ".txt");
     ofstream fichierTraite (nouveauFichier, ios::app);
     FILE *hd;
-    char num[100];
+    char automate[100];
     char commande[1000] = "grep ";
     strcat(commande, monFichier);
     strcat(commande, " /home/gtaupiac/Documents/IRCCYN/automates.txt | cut -d' ' -f2");
     hd = popen(commande, "r");
-    while (fgets(num, sizeof(num), hd) != NULL);
+    while (fgets(automate, sizeof(automate), hd) != NULL);
     pclose(hd);
     string valide;
-    if (isNumber(indice(num[0]))) {
-        if (validation(monMot.substr(string("w"+n+" = ").length()), indice(num[0])) && validationTemporelle(monMot.substr(string("w"+n+" = ").length()), temps)) {
-            valide = " A";
-        } else {
-            valide = " E";
-        }
-
-        fichierTraite << monMot << valide << endl;
+    automate[strlen(automate) - 1] = 0;
+    string autom(automate);
+    if (validation(monMot.substr(string("w"+n+" = ").length()), autom) && validationTemporelle(monMot.substr(string("w"+n+" = ").length()), temps)) {
+        valide = " A";
+    } else {
+        valide = " E";
     }
+    fichierTraite << monMot << valide << endl;
+
     fichierTraite.close();
     return 0;
 }
