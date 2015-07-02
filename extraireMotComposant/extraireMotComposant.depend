@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1426458471 source:/home/gtaupiac/Documents/IRCCYN/extraireMotComposant/extraireMotComposant.cpp
+	<iostream>
+	<string.h>
+	<fstream>
+
